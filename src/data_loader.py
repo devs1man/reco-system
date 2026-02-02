@@ -24,5 +24,5 @@ def load_data(path):
 
     num_users = len(user_to_index)
     num_items = len(movie_to_index)
-
-    return data, num_items, num_users
+    
+    return data, num_users, num_items

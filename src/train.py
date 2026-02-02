@@ -1,6 +1,8 @@
 from data_loader import load_data
 from model import MatrixFactorization
 import numpy as np
+import random
+import math
 
 def train():
     data, num_users, num_items = load_data("data/u.data")
@@ -15,13 +17,31 @@ def train():
         lr = 0.01,
         reg = 0.1
     )
-
+    
     model.mu = mu
+    random.shuffle(data)
+    split = int(0.8 * len(data))
+    train_data = data[:split]
+    val_data = data[split:]
 
     epochs = 20
     for epoch in range(epochs):
-        mse = model.train_one_epoch(data)
+        mse = model.train_one_epoch(train_data)
         print(f"Epoch {epoch +1}/{epochs} - MSE: {mse:.4f}")
+        rmse = np.sqrt(mse)
+        print(f"Epoch {epoch+1}/{epochs} - RMSE: {rmse:.4f}")
+
+    val_error = 0.0
+    
+
+    for u,i,r in val_data:
+        rating_val = model.predict(u, i)
+        err = r - rating_val
+        val_error += err ** 2 
+
+    val_mse = val_error/len(val_data)
+    val_rmse = np.sqrt(val_mse)
+    print(f"\nValidaiton RMSE: {val_rmse:.4f}")
 
 if __name__ == "__main__":
     train()

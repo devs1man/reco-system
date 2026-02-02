@@ -22,11 +22,11 @@ class MatrixFactorization:
     #function to predict the rating final
     def predict(self, u, i):
         return(
-            self.mu + self.bi[i] + self.bu[u] + np.dot(self.P[u], self.Q[i])
+            self.mu + self.bu[u] + self.bi[i] + np.dot(self.P[u], self.Q[i])
         )
 
     def train_one_epoch(self, data):
-        train_error = 0.0
+        total_error = 0.0
 
         for u, i, r in data:
             r_hat = self.predict(u,i)
