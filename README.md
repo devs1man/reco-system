@@ -104,7 +104,7 @@ The final model **significantly outperforms the baseline**, demonstrating effect
 
 1. Create and activate a virtual environment
 2. Install dependencies:
-   ````bash
+   ```bash
    pip install numpy pandas
-   python src/train.py```
-   ````
+   python src/train.py
+   ```
