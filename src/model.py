@@ -22,7 +22,7 @@ class MatrixFactorization:
     #function to predict the rating final
     def predict(self, u, i):
         return(
-            self.mu + self.bi + self.bu + np.dot(self.P[u], self.Q[i])
+            self.mu + self.bi[i] + self.bu[u] + np.dot(self.P[u], self.Q[i])
         )
 
     def train_one_epoch(self, data):
