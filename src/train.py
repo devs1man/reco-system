@@ -33,6 +33,11 @@ def train():
 
     val_error = 0.0
     
+    baseline_error = 0.0
+    for _,_,r in val_data:
+        baseline_error =+ (r-mu)**2
+    baseline_rmse = np.sqrt(baseline_error/len(val_data))
+    print(f"Baseline RMSE (global mean): {baseline_rmse:.4f}")
 
     for u,i,r in val_data:
         rating_val = model.predict(u, i)
