@@ -13,6 +13,7 @@ def evaluate(model, val_data):
         error += (r-r_hat)**2
     mse = error/len(val_data)
     rmse = np.sqrt(mse)
+    return rmse
 
 def train():
     data, num_users, num_items = load_data("data/u.data")
@@ -39,7 +40,7 @@ def train():
     for f in factors_list:
         for lr in lr_list:
             for reg in reg_list:
-                print(f"\nTraining with factors={f}, lr={lr}, reg="reg)
+                print(f"\nTraining with factors={f}, lr={lr}, reg={reg}")
 
                 model = MatrixFactorization(
                     num_users = num_users,
@@ -51,24 +52,30 @@ def train():
     
                 model.mu = mu
 
-    epochs = 20
-    for epoch in range(epochs):
-        mse = model.train_one_epoch(train_data)
-        print(f"Epoch {epoch +1}/{epochs} - MSE: {mse:.4f}")
-        rmse = np.sqrt(mse)
-        print(f"Epoch {epoch+1}/{epochs} - RMSE: {rmse:.4f}")
+                epochs = 15
+                for _ in range(epochs):
+                    model.train_one_epoch(train_data)
 
-    val_error = 0.0
+                val_rmse = evaluate(model, val_data)
+
+                results.append({
+                    "factors":f,
+                    "lr": lr,
+                    "reg": reg,
+                    "val_rmse": val_rmse
+                })
+
+                print(f"Validation RMSE: {val_rmse: .4f}")
     
-
-    for u,i,r in val_data:
-        rating_val = model.predict(u, i)
-        err = r - rating_val
-        val_error += err ** 2 
-
-    val_mse = val_error/len(val_data)
-    val_rmse = np.sqrt(val_mse)
-    print(f"\nValidaiton RMSE: {val_rmse:.4f}")
+    best = min(results, key=lambda x:x["val_rmse"])
+    
+    print("\n")
+    print("BEST HYPERPARAMETER SET:")
+    print("\n")
+    print(f"Factors: ,{best['factors']}")
+    print(f"Learning rate: ,{best['lr']}")
+    print(f"Regularization: ,{best['reg']}")
+    print(f"Validation RMSE: ,{best['val_rmse']:.4f}")
 
 if __name__ == "__main__":
     train()
