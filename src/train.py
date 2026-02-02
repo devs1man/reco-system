@@ -52,11 +52,40 @@ def train():
     
                 model.mu = mu
 
-                epochs = 15
-                for _ in range(epochs):
-                    model.train_one_epoch(train_data)
+                max_epochs = 80
+                patience = 5
 
-                val_rmse = evaluate(model, val_data)
+                best_val_rmse = float("inf")
+                epochs_without_improvement = 0
+
+                train_rmse_history = []
+                val_rmse_history = []
+
+                for epoch in range(max_epochs):
+                    random.shuffle(train_data)
+                    train_mse = model.train_one_epoch(train_data)
+                    train_rmse = np.sqrt(train_mse)
+
+                    val_rmse = evaluate(model, val_data)
+
+                    train_rmse_history.append(train_rmse)
+                    val_rmse_history.append(val_rmse)
+
+                    print(
+                        f"Epoch {epoch+1}"
+                        f"Train RMSE: {train_rmse: .4f}"
+                        f"Val RMSE: {val_rmse: .4f}"
+                    )
+
+                    if val_rmse< best_val_rmse:
+                        best_val_rmse = val_rmse
+                        epochs_without_improvement = 0
+                    else:
+                        epochs_without_improvement+=1
+
+                    if epochs_without_improvement >= patience:
+                        print("Early stopping triggered")
+                        break
 
                 results.append({
                     "factors":f,
