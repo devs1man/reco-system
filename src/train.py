@@ -9,7 +9,7 @@ np.random.seed(42)
 def evaluate(model, val_data):
     error = 0.0
     for u,i,r in val_data:
-        r_hat = model.predict(u,i)
+        r_hat = model.safe_predict(u,i)
         error += (r-r_hat)**2
     mse = error/len(val_data)
     rmse = np.sqrt(mse)

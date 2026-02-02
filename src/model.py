@@ -20,16 +20,27 @@ class MatrixFactorization:
         self.mu = 0.0
 
     #function to predict the rating final
-    def predict(self, u, i):
-        return(
-            self.mu + self.bu[u] + self.bi[i] + np.dot(self.P[u], self.Q[i])
-        )
+    def safe_predict(self, u, i):
+        if u>= self.num_users and i >= self.num_items:
+            return self.mu
+        
+        elif u >= self.num_users:
+            return self.mu + self.bi[i]
+        
+        elif i >= self.num_items:
+            return self.mu + self.bu[u]
+        
+        else:
+            return self.mu + self.bu[u] + self.bi[i] + np.dot(self.P[u], self.Q[i])
+        
+
+    
 
     def train_one_epoch(self, data):
         total_error = 0.0
 
         for u, i, r in data:
-            r_hat = self.predict(u,i)
+            r_hat = self.safe_predict(u,i)
             err = r - r_hat
 
             total_error += err**2
